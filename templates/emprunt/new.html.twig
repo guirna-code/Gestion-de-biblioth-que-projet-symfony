@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Emprunt{% endblock %}
+
+{% block body %}
+    <div class="emprunt-edit-container">
+        <div class="emprunt-card">
+            <div class="emprunt-header">
+                <div class="emprunt-title">Create new Emprunt</div>
+            </div>
+
+            {{ include('emprunt/_form.html.twig') }}
+
+            <div class="form-actions">
+                <a class="btn ghost" href="{{ path('app_emprunt_index') }}">Back to list</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/emprunt-edit.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/emprunt-new.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ importmap('emprunt_edit') }}
+{% endblock %}

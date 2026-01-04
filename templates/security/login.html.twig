@@ -1,0 +1,74 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion{% endblock %}
+
+{% block stylesheets %}{% endblock %}
+
+{% block body %}
+    <div class="container" style="padding:3rem 1rem">
+        <div style="max-width:520px;margin:0 auto">
+            <div class="card">
+                <div style="padding:1.25rem">
+                    <h3 class="page-title">Se connecter</h3>
+
+                    {% if error %}
+                        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                    {% endif %}
+                                        <div style="display:flex;gap:.5rem;margin-bottom:.75rem;color=blue">
+                                            <button id="tab-admin" class="btn btn-ghost" type="button">Admin</button>
+                                            <button id="tab-client" class="btn btn-ghost" type="button">Client</button>
+                                        </div>
+
+                                        <form method="post" action="{{ path('app_login') }}">
+                                                <div class="form-group">
+                                                        <label for="username">Identifiant (email)</label>
+                                                        <input type="text" value="{{ last_username }}" name="_username" id="username" required autofocus>
+                                                </div>
+
+                                                <div class="form-group">
+                                                        <label for="password">Mot de passe</label>
+                                                        <input type="password" name="_password" id="password" required>
+                                                </div>
+
+                                                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                                                <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.75rem">
+                                                        <button class="btn btn-primary" type="submit">Se connecter</button>
+                                                        <a href="/" class="btn btn-ghost">Retour</a>
+                                                </div>
+                                        </form>
+
+                                        <div style="margin-top:1rem;border-top:1px solid var(--border);padding-top:.8rem">
+                                            <div style="display:flex;justify-content:space-between;align-items:center">
+                                                <div>
+                                                    <small class="muted">Nouvel utilisateur ?</small>
+                                                </div>
+                                                <div>
+                                                    <a href="{{ path('user_new') }}" class="btn btn-ghost">S'inscrire (client)</a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <script>
+                                            (function(){
+                                                const admin = document.getElementById('tab-admin');
+                                                const client = document.getElementById('tab-client');
+                                                const usernameLabel = document.querySelector('label[for="username"]');
+
+                                                function selectRole(role){
+                                                    if(role === 'admin'){
+                                                        usernameLabel.textContent = 'Nom (email)';
+                                                    } else {
+                                                        usernameLabel.textContent = 'Identifiant (email)';
+                                                    }
+                                                }
+
+                                                admin.addEventListener('click', () => selectRole('admin'));
+                                                client.addEventListener('click', () => selectRole('client'));
+                                            })();
+                                        </script>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

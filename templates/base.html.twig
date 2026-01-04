@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Welcome!{% endblock %}</title>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+        {% block stylesheets %}
+            <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
+        {% endblock %}
+
+        {% block javascripts %}
+            {% block importmap %}{{ importmap('app') }}{% endblock %}
+        {% endblock %}
+    </head>
+    <body>
+        <header style="background:var(--surface);border-bottom:1px solid var(--border);padding:.6rem 0">
+            <div class="container" style="display:flex;align-items:center;justify-content:space-between">
+                <div style="display:flex;align-items:center;gap:1rem">
+                    <a href="{{ path('library_home') }}" class="btn btn-ghost">Bibliothèque</a>
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <a href="{{ path('app_book_index') }}" class="btn btn-ghost">Gestion Livres</a>
+                        <a href="{{ path('app_user_index') }}" class="btn btn-ghost">Gestion Utilisateurs</a>
+                        <a href="{{ path('app_emprunt_index') }}" class="btn btn-ghost">Gestion Emprunts</a>
+                    {% else %}
+                        <a href="{{ path('app_book_index') }}" class="btn btn-ghost">Catalogue</a>
+                        <a href="{{ path('app_emprunt_index') }}" class="btn btn-ghost">Mes emprunts</a>
+                    {% endif %}
+                </div>
+
+                <div>
+                    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                        <span class="badge">{{ app.user.email }}</span>
+                        <a href="{{ path('app_logout') }}" class="btn btn-ghost">Se déconnecter</a>
+                    {% else %}
+                        <a href="{{ path('app_login') }}" class="btn btn-primary">Se connecter</a>
+                    {% endif %}
+                </div>
+            </div>
+        </header>
+
+        <main>
+            {% block body %}{% endblock %}
+        </main>
+    </body>
+</html>

@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des livres{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="page-header">
+        <h1 class="page-title">📚 Liste des livres</h1>
+        <div>
+            {% if is_granted('ROLE_ADMIN') %}
+                <a href="{{ path('app_book_new') }}" class="btn btn-primary">Nouveau livre</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Titre</th>
+                        <th>Auteur</th>
+                        <th>ISBN</th>
+                        <th>Disponible</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for book in books %}
+                        <tr>
+                            <td>{{ book.id }}</td>
+                            <td>{{ book.titre }}</td>
+                            <td>{{ book.auteur }}</td>
+                            <td>{{ book.isbn }}</td>
+                            <td>{{ book.disponible ? 'Oui' : 'Non' }}</td>
+                            <td>
+                                <a href="{{ path('app_book_show', {'id': book.id}) }}" class="btn btn-ghost">Voir</a>
+                                {% if is_granted('ROLE_ADMIN') %}
+                                    <a href="{{ path('app_book_edit', {'id': book.id}) }}" class="btn btn-primary">Modifier</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="6" class="center muted">Aucun livre trouvé</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
