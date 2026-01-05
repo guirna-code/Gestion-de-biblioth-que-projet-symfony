@@ -1,0 +1,5 @@
+/* Styles for templates/emprunt/index.html.twig */
+
+.emprunt-index .table-wrapper { background:#fff; border-radius:6px; padding:.5rem; }
+.emprunt-index table { width:100%; border-collapse:collapse; }
+.emprunt-index th, .emprunt-index td { padding:.6rem; border-bottom:1px solid #eee; }

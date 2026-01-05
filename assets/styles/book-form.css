@@ -1,0 +1,5 @@
+/* Styles for templates/book/_form.html.twig */
+
+.book-form .form-row { margin-bottom:.75rem; }
+.book-form label { display:block; margin-bottom:.25rem; font-weight:600; }
+.book-form input, .book-form select, .book-form textarea { width:100%; padding:.5rem; border:1px solid #ddd; border-radius:4px; }

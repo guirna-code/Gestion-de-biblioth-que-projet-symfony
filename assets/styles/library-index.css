@@ -1,0 +1,5 @@
+/* Styles for templates/library/index.html.twig */
+
+.library-index .catalog { display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:1rem; }
+.library-index .card { padding: .75rem; }
+.library-index .catalog .title { font-weight:600; }

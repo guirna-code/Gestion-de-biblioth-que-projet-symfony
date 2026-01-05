@@ -1,0 +1,5 @@
+/* Styles for templates/library/confirmation.html.twig */
+
+.library-confirmation { text-align:center; padding:2rem; }
+.library-confirmation .icon { font-size:3rem; margin-bottom:1rem; }
+.library-confirmation .message { font-size:1.1rem; }

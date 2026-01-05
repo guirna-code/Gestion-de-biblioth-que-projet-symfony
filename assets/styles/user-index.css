@@ -1,0 +1,6 @@
+/* Styles for templates/user/index.html.twig */
+
+.user-index .table-wrapper { background:#fff; border-radius:6px; padding:0.5rem; }
+.user-index table { width:100%; border-collapse:collapse; }
+.user-index th, .user-index td { padding:.6rem; border-bottom:1px solid #eee; }
+.user-index .avatar { width:36px; height:36px; border-radius:50%; display:inline-block; overflow:hidden; }

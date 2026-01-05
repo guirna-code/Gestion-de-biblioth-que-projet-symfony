@@ -1,7 +1,9 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}New Book{% endblock %}
-
+{% block stylesheets %}
+            <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
+        {% endblock %}
 {% block body %}
     <h1>Create new Book</h1>
 

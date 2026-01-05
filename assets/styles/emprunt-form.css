@@ -1,0 +1,5 @@
+/* Styles for templates/emprunt/_form.html.twig */
+
+.emprunt-form .form-row { margin-bottom:.75rem; }
+.emprunt-form label { display:block; margin-bottom:.25rem; font-weight:600; }
+.emprunt-form input, .emprunt-form select, .emprunt-form textarea { width:100%; padding:.5rem; border:1px solid #ddd; border-radius:4px; }

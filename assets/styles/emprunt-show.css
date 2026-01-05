@@ -1,0 +1,5 @@
+/* Styles for templates/emprunt/show.html.twig */
+
+.emprunt-show table { width:100%; border-collapse:collapse; }
+.emprunt-show th, .emprunt-show td { padding:.5rem; border-bottom:1px solid #eee; }
+.emprunt-show .meta { margin-top:1rem; color:#666; }

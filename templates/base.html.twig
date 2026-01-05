@@ -4,6 +4,7 @@
         <meta charset="UTF-8">
         <title>{% block title %}Welcome!{% endblock %}</title>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+        
         {% block stylesheets %}
             <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
         {% endblock %}
@@ -15,30 +16,38 @@
     <body>
         <header style="background:var(--surface);border-bottom:1px solid var(--border);padding:.6rem 0">
             <div class="container" style="display:flex;align-items:center;justify-content:space-between">
+                
                 <div style="display:flex;align-items:center;gap:1rem">
-                    <a href="{{ path('library_home') }}" class="btn btn-ghost">Bibliothèque</a>
+                    {# Lien commun : Accueil de la bibliothèque #}
+                    <a href="{{ path('library_home') }}" class="btn btn-ghost"> Accueil</a>
+
+                    {# SECTION RÉSERVÉE À L'ADMINISTRATEUR #}
                     {% if is_granted('ROLE_ADMIN') %}
-                        <a href="{{ path('app_book_index') }}" class="btn btn-ghost">Gestion Livres</a>
-                        <a href="{{ path('app_user_index') }}" class="btn btn-ghost">Gestion Utilisateurs</a>
-                        <a href="{{ path('app_emprunt_index') }}" class="btn btn-ghost">Gestion Emprunts</a>
-                    {% else %}
-                        <a href="{{ path('app_book_index') }}" class="btn btn-ghost">Catalogue</a>
-                        <a href="{{ path('app_emprunt_index') }}" class="btn btn-ghost">Mes emprunts</a>
+                        <a href="{{ path('app_book_index') }}" class="btn btn-ghost">📚 Gestion Livres</a>
+                        <a href="{{ path('app_user_index') }}" class="btn btn-ghost">👥 Utilisateurs</a>
+                        <a href="{{ path('app_emprunt_index') }}" class="btn btn-ghost">🔄 Gestion Emprunts</a>
+                    
+                    {# SECTION POUR LE CLIENT (ROLE_USER) #}
+                    {% elseif is_granted('ROLE_USER') %}
+                        {# On ne met rien ici ou juste un lien vers le catalogue si nécessaire #}
+                        {# Le lien "Mes emprunts" a été supprimé pour répondre à votre demande #}
                     {% endif %}
                 </div>
 
                 <div>
                     {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-                        <span class="badge">{{ app.user.email }}</span>
-                        <a href="{{ path('app_logout') }}" class="btn btn-ghost">Se déconnecter</a>
+                        <span class="badge" style="background-color: #e9ecef; color: #495057; padding: 0.5rem; border-radius: 8px; margin-right: 0.5rem;">
+                            👤 {{ app.user.email }}
+                        </span>
+                        <a href="{{ path('app_logout') }}" class="btn btn-outline-danger btn-sm">Déconnexion</a>
                     {% else %}
-                        <a href="{{ path('app_login') }}" class="btn btn-primary">Se connecter</a>
+                        <a href="{{ path('app_login') }}" class="btn btn-primary btn-sm">Se connecter</a>
                     {% endif %}
                 </div>
             </div>
         </header>
 
-        <main>
+        <main class="container py-4">
             {% block body %}{% endblock %}
         </main>
     </body>

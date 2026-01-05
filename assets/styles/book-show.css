@@ -1,0 +1,3 @@
+.book-show table { width:100%; border-collapse:collapse; }
+.book-show th, .book-show td { padding:.5rem; border-bottom:1px solid #eee; }
+.book-show .actions { margin-top:1rem; display:flex; gap:.5rem; }

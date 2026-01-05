@@ -10,7 +10,7 @@
                 <div class="small muted">Liste des emprunts enregistrés</div>
             </div>
             <div>
-                {% if is_granted('ROLE_USER') %}
+                {% if is_granted('ROLE_ADMIN') %}
                     <a href="{{ path('app_emprunt_new') }}" class="btn btn-primary">Créer un emprunt</a>
                 {% endif %}
                 <a href="{{ path('library_home') }}" class="btn btn-ghost">Retour</a>
@@ -20,17 +20,17 @@
         <div class="card" style="margin-bottom:1rem">
             <div class="flex" style="gap:1rem;align-items:center">
                 <div style="flex:1">
-                    <input id="search" type="search" placeholder="Rechercher par utilisateur ou livre..." class="" style="width:100%;padding:.6rem .75rem;border:1px solid var(--border);border-radius:10px">
+                    <input id="search" type="search" placeholder="Rechercher par utilisateur ou livre..." style="width:100%;padding:.6rem .75rem;border:1px solid var(--border);border-radius:10px">
                 </div>
                 <div>
                     <button id="exportCsv" class="btn btn-secondary">Exporter CSV</button>
                 </div>
             </div>
         </div>
-
+     
         <div class="card">
             <div class="table-wrapper">
-                <table id="empruntTable">
+                <table id="empruntTable" class="table">
                     <thead>
                         <tr>
                             <th>Id</th>
@@ -45,38 +45,34 @@
                     </thead>
                     <tbody>
                         {% for emprunt in emprunts %}
-                            {# On sécurise l'email pour le JS #}
                             {% set userEmail = emprunt.utilisateur ? emprunt.utilisateur.email : 'Inconnu' %}
                             <tr data-utilisateur="{{ userEmail|e }}" data-livre="{{ emprunt.livre|e }}">
                                 <td>{{ emprunt.id }}</td>
-                                
-                                {# Correction : on utilise .utilisateur au lieu de .user #}
-                                <td>
-                                    <strong>{{ userEmail }}</strong>
-                                </td>
-                                
+                                <td><strong>{{ userEmail }}</strong></td>
                                 <td>{{ emprunt.livre }}</td>
-                                
-                                {# Correction : on utilise les noms exacts de vos propriétés (Empruntdate) #}
                                 <td>{{ emprunt.Empruntdate ? emprunt.Empruntdate|date('d/m/Y') : '-' }}</td>
                                 <td>{{ emprunt.dateretour ? emprunt.dateretour|date('d/m/Y') : '-' }}</td>
-                                <td>{{ emprunt.dateRetourReelle ? emprunt.dateRetourReelle|date('d/m/Y') : '<span class="badge bg-warning text-dark">En cours</span>'|raw }}</td>
-                                
-                                <td>{{ emprunt.penalites is not null ? emprunt.penalites ~ ' €' : '-' }}</td>
-                                
                                 <td>
-                                    <div class="flex" style="gap:0.5rem">
-                                        <a class="btn btn-ghost btn-sm" href="{{ path('app_emprunt_show', {'id': emprunt.id}) }}">Voir</a>
+                                    {{ emprunt.dateRetourReelle ? emprunt.dateRetourReelle|date('d/m/Y') : '<span class="badge bg-warning text-dark">En cours</span>'|raw }}
+                                </td>
+                                <td>{{ emprunt.penalites is not null ? emprunt.penalites ~ ' €' : '0 €' }}</td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        <a href="{{ path('app_emprunt_show', {'id': emprunt.id}) }}" class="btn btn-sm btn-info text-white">Voir</a>
                                         
                                         {% if is_granted('ROLE_ADMIN') %}
-                                            <a class="btn btn-primary btn-sm" href="{{ path('app_emprunt_edit', {'id': emprunt.id}) }}">Modifier</a>
+                                            <a href="{{ path('app_emprunt_edit', {'id': emprunt.id}) }}" class="btn btn-sm btn-warning">Modifier</a>
+                                            <form method="post" action="{{ path('app_emprunt_delete', {'id': emprunt.id}) }}" style="display:inline-block" onsubmit="return confirm('Supprimer cet emprunt ?');">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ emprunt.id) }}">
+                                                <button class="btn btn-sm btn-danger">Supprimer</button>
+                                            </form>
                                         {% endif %}
                                     </div>
                                 </td>
                             </tr>
                         {% else %}
                             <tr>
-                                <td colspan="8" class="center muted">Aucun emprunt trouvé</td>
+                                <td colspan="8" class="text-center muted py-4">Aucun emprunt trouvé</td>
                             </tr>
                         {% endfor %}
                     </tbody>
@@ -84,48 +80,48 @@
             </div>
         </div>
     </div>
+{% endblock %}
 
-    {% block javascripts %}
-        <script>
-            (function(){
-                const $search = document.getElementById('search');
-                const $table = document.getElementById('empruntTable');
-                const $rows = Array.from($table.querySelectorAll('tbody tr:not(.muted)'));
+{% block javascripts %}
+    <script>
+        (function(){
+            const $search = document.getElementById('search');
+            const $table = document.getElementById('empruntTable');
+            const $rows = Array.from($table.querySelectorAll('tbody tr:not(.muted)'));
 
-                function filter(q){
-                    const s = q.trim().toLowerCase();
-                    $rows.forEach(r => {
-                        const user = (r.dataset.utilisateur || '').toLowerCase();
-                        const livre = (r.dataset.livre || '').toLowerCase();
-                        const match = !s || user.includes(s) || livre.includes(s);
-                        r.style.display = match ? '' : 'none';
-                    });
-                }
-
-                if($search) {
-                    $search.addEventListener('input', e => filter(e.target.value));
-                }
-
-                // CSV export
-                document.getElementById('exportCsv').addEventListener('click', () => {
-                    const visibleRows = $rows.filter(r => r.style.display !== 'none');
-                    const lines = [['Id','Utilisateur','Livre','Emprunt','Retour prévu','Retour réel','Pénalités']];
-                    visibleRows.forEach(r => {
-                        const cells = Array.from(r.querySelectorAll('td')).slice(0,7).map(td => td.textContent.trim());
-                        lines.push(cells);
-                    });
-                    const csv = lines.map(l => l.map(v => '"'+v.replace(/"/g,'""')+'"').join(',')).join('\n');
-                    const blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'emprunts.csv';
-                    document.body.appendChild(a);
-                    a.click();
-                    a.remove();
-                    URL.revokeObjectURL(url);
+            function filter(q){
+                const s = q.trim().toLowerCase();
+                $rows.forEach(r => {
+                    const user = (r.dataset.utilisateur || '').toLowerCase();
+                    const livre = (r.dataset.livre || '').toLowerCase();
+                    const match = !s || user.includes(s) || livre.includes(s);
+                    r.style.display = match ? '' : 'none';
                 });
-            })();
-        </script>
-    {% endblock %}
+            }
+
+            if($search) {
+                $search.addEventListener('input', e => filter(e.target.value));
+            }
+
+            // CSV export
+            document.getElementById('exportCsv').addEventListener('click', () => {
+                const visibleRows = $rows.filter(r => r.style.display !== 'none');
+                const lines = [['Id','Utilisateur','Livre','Emprunt','Retour prévu','Retour réel','Pénalités']];
+                visibleRows.forEach(r => {
+                    const cells = Array.from(r.querySelectorAll('td')).slice(0,7).map(td => td.textContent.trim());
+                    lines.push(cells);
+                });
+                const csv = lines.map(l => l.map(v => '"'+v.replace(/"/g,'""')+'"').join(',')).join('\n');
+                const blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'emprunts.csv';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                URL.revokeObjectURL(url);
+            });
+        })();
+    </script>
 {% endblock %}

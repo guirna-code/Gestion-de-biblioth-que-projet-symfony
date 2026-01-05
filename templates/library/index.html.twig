@@ -4,10 +4,36 @@
 
 {% block body %}
     <div class="container">
-        <div class="page-header">
-            <div>
-                <h1 class="page-title">📚 Bibliothèque</h1>
-                <p class="page-subtitle">Gestion complète de votre bibliothèque numérique</p>
+        
+        {# --- BLOC DES MESSAGES FLASH (Affiche le bandeau vert de succès) --- #}
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm mt-3" role="alert" style="border-radius: 15px; background-color: #d1e7dd; color: #0f5132;">
+                <div class="d-flex align-items-center">
+                    <span class="fs-4 me-3">✅</span>
+                    <div>
+                        <strong>Succès !</strong> {{ message }}
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+
+        {# --- AFFICHAGE DES ERREURS (Si besoin) --- #}
+        {% for message in app.flashes('danger') %}
+            <div class="alert alert-danger mt-3" role="alert">
+                ❌ {{ message }}
+            </div>
+        {% endfor %}
+
+        <div class="page-header mt-4">
+            <div class="flex items-center gap-md">
+                {# 1. LOGO DE LA BIBLIOTHÈQUE #}
+                <img src="{{ asset('images/logo-library.png') }}" alt="Logo" style="width: 80px; height: 80px; border-radius: 50%;">
+                
+                <div>
+                    <h1 class="page-title">📚 Bibliothèque</h1>
+                    <p class="page-subtitle">Gestion complète de votre bibliothèque numérique</p>
+                </div>
             </div>
             <div class="flex items-center gap-md">
                 {% if is_granted('IS_AUTHENTICATED_FULLY') %}
@@ -19,23 +45,6 @@
             </div>
         </div>
 
-        <div class="grid grid-3 gap-lg">
-            <div class="card card-icon">
-                <div class="icon">📘</div>
-                <div>
-                    <h3 class="card-title">Livres</h3>
-                    <div class="flex items-center justify-between mt-md">
-                        <div>
-                            <h2 id="count-books" class="mb-0">—</h2>
-                            <small class="text-muted">Total livres</small>
-                        </div>
-                        <a href="{{ path('app_book_index') }}" class="btn btn-primary btn-sm">Gérer</a>
-                    </div>
-                </div>
-            </div>
-            {# ... (autres cartes stats) #}
-        </div>
-
         <div class="mt-xl">
             <div class="flex items-center justify-between mb-md">
                 <h2 class="h4 mb-0">📖 Catalogue des livres</h2>
@@ -45,20 +54,37 @@
                 {% for livre in livres %}
                     <div class="card h-full flex flex-col justify-between">
                         <div>
-                            {# CORRECTION ICI : Utilisation de .titre au lieu de .title #}
+                            {# 2. COUVERTURE DYNAMIQUE (Méthode par ID) #}
+                            <div class="book-cover mb-md" style="background: #f4f4f4; border-radius: 8px; overflow: hidden; height: 250px;">
+                                <img src="{{ asset('images/covers/' ~ livre.id ~ '.png') }}" 
+                                     alt="{{ livre.titre }}" 
+                                     style="width: 100%; height: 100%; object-fit: cover;"
+                                     onerror="this.src='{{ asset('images/covers/default-book.png') }}';">
+                            </div>
+
                             <h3 class="h5 mb-sm">{{ livre.titre|default('Titre inconnu') }}</h3>
                             <p class="text-muted small">Auteur : {{ livre.auteur|default('Auteur inconnu') }}</p>
                         </div>
-                        <div class="mt-md">
-                            {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-                                <a href="{{ path('app_achat_confirmation', {'id': livre.id}) }}" 
-                                  class="btn btn-primary btn-block">
-                                     Commander maintenant
-                                 </a>
-                            {% else %}
-                                <a href="{{ path('app_login') }}" class="btn btn-outline btn-block btn-sm">Connectez-vous pour commander</a>
-                            {% endif %}
-                        </div>
+                       <div class="mt-md">
+    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+        {# On vérifie la disponibilité réelle en base de données #}
+        {% if livre.getDisponible() %}
+            <a href="{{ path('app_emprunt_commander', {'id': livre.id}) }}" 
+               class="btn btn-primary btn-block">
+                Commander maintenant
+            </a>
+        {% else %}
+            {# Si disponible est à false, on affiche ce bouton gris #}
+            <button class="btn btn-secondary btn-block" disabled style="opacity: 0.6; cursor: not-allowed;">
+                ❌ Déjà réservé
+            </button>
+        {% endif %}
+    {% else %}
+        <a href="{{ path('app_login') }}" class="btn btn-outline btn-block btn-sm">
+            Connectez-vous pour commander
+        </a>
+    {% endif %}
+</div>
                     </div>
                 {% else %}
                     <div class="card col-span-3 center p-lg">
@@ -68,6 +94,4 @@
             </div>
         </div>
     </div>
-
-    {# ... (bloc javascripts identique) #}
 {% endblock %}

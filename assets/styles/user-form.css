@@ -1,0 +1,16 @@
+/* Styles for templates/user/_form.html.twig */
+
+/* Common layout helpers (kept small to avoid conflicts) */
+.container { max-width: 1100px; margin: 0 auto; padding: 1rem; }
+.page-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; }
+.card { background:#fff; border-radius:6px; box-shadow:0 1px 3px rgba(0,0,0,0.05); padding:1rem; }
+.btn { display:inline-block; padding:.4rem .6rem; border-radius:4px; border:1px solid transparent; cursor:pointer; text-decoration:none; }
+.btn-primary { background:#0d6efd; color:#fff; border-color:#0d6efd; }
+.btn-ghost { background:transparent; color:#0d6efd; border-color:transparent; }
+.center { text-align:center; }
+.muted { color:#6c757d; }
+
+/* User form specific */
+.user-form .form-row { margin-bottom: .75rem; }
+.user-form label { display:block; font-weight:600; margin-bottom:.25rem; }
+.user-form input, .user-form select, .user-form textarea { width:100%; padding:.5rem; border:1px solid #ddd; border-radius:4px; }

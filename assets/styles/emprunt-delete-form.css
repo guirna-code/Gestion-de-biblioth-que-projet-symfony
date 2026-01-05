@@ -1,0 +1,4 @@
+/* Styles for templates/emprunt/_delete_form.html.twig */
+
+.emprunt-delete-form button { background:transparent; color:#b00; border:1px solid #b00; padding:.25rem .5rem; border-radius:4px; }
+.emprunt-delete-form button:hover { background:#b00; color:#fff; }

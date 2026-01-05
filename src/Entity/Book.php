@@ -34,6 +34,10 @@ class Book
     {
         return $this->titre;
     }
+    public function isDisponible(): ?bool
+{
+    return $this->disponible;
+}
 
     public function setTitre(string $titre): static
     {

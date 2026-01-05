@@ -12,12 +12,4 @@
     {{ include('emprunt/_delete_form.html.twig') }}
 {% endblock %}
 
-{% block stylesheets %}
-    {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('styles/emprunt-edit.css') }}">
-{% endblock %}
-
-{% block javascripts %}
-    {{ parent() }}
-    {{ importmap('emprunt_edit') }}
-{% endblock %}
+ 

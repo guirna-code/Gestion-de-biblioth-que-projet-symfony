@@ -1,11 +1,16 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Book{% endblock %}
-
+{% block title %}Edit Emprunt{% endblock %}
+{% block stylesheets %}
+            <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
+        {% endblock %}
 {% block body %}
-    <h1>Edit Book</h1>
+    <h1>Edit Emprunt</h1>
 
-    {{ include('book/_form.html.twig', {'button_label': 'Update'}) }}
+    {{ include('emprunt/_form.html.twig', {'button_label': 'Update'}) }}
 
     <a href="{{ path('app_book_index') }}">back to list</a>
+
+    {{ include('book/edit.html.twig') }}
 {% endblock %}
+

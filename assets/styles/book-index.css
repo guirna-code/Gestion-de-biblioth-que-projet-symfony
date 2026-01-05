@@ -1,0 +1,4 @@
+.book-index .table-wrapper { background:#fff; border-radius:6px; padding:.5rem; }
+.book-index table { width:100%; border-collapse:collapse; }
+.book-index th, .book-index td { padding:.6rem; border-bottom:1px solid #eee; }
+.book-index .actions { display:flex; gap:.5rem; align-items:center; }
