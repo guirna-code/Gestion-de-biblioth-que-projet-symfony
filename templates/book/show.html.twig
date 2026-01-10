@@ -2,35 +2,153 @@
 
 {% block title %}Book{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /* ---------- PAGE ---------- */
+        body {
+            background-color: #f4f6f9;
+        }
+
+        .page-container {
+            max-width: 800px;
+            margin: 3rem auto;
+        }
+
+        /* ---------- CARD ---------- */
+        .card {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 2rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        }
+
+        /* ---------- TITLE ---------- */
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        /* ---------- TABLE ---------- */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 2rem;
+        }
+
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th {
+            font-weight: 600;
+            background-color: #f8f9fa;
+        }
+
+        /* ---------- BUTTONS ---------- */
+        .btn {
+            border-radius: 12px;
+            padding: 0.6rem 1.4rem;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background-color: #0d6efd;
+            border: none;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background-color: #0b5ed7;
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            border: none;
+            color: #fff;
+        }
+
+        .btn-danger:hover {
+            background-color: #bb2d3b;
+        }
+
+        .btn-link {
+            text-decoration: none;
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        .btn-link:hover {
+            text-decoration: underline;
+        }
+
+        /* ---------- FOOTER ---------- */
+        .form-footer {
+            display: flex;
+            justify-content: flex-start;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        /* ---------- RESPONSIVE ---------- */
+        @media (max-width: 576px) {
+            .page-title {
+                font-size: 1.6rem;
+            }
+
+            th, td {
+                padding: 0.5rem 0.75rem;
+            }
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
-    <h1>Book</h1>
+<div class="page-container">
+    <div class="card">
 
-    <table>
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ book.id }}</td>
-            </tr>
-            <tr>
-                <th>Titre</th>
-                <td>{{ book.titre }}</td>
-            </tr>
-            <tr>
-                <th>Auteur</th>
-                <td>{{ book.auteur }}</td>
-            </tr>
-            <tr>
-                <th>ISBN</th>
-                <td>{{ book.isbn }}</td>
-            </tr>
-        </tbody>
-    </table>
+        <h1 class="page-title">📚 Les détailles du livres</h1>
 
-    <a href="{{ path('app_book_index') }}">back to list</a>
-    <a href="{{ path('app_book_edit', {'id': book.id}) }}">edit</a>
+        <table>
+            <tbody>
+                <tr>
+                    <th>Id</th>
+                    <td>{{ book.id }}</td>
+                </tr>
+                <tr>
+                    <th>Titre</th>
+                    <td>{{ book.titre }}</td>
+                </tr>
+                <tr>
+                    <th>Auteur</th>
+                    <td>{{ book.auteur }}</td>
+                </tr>
+                <tr>
+                    <th>ISBN</th>
+                    <td>{{ book.isbn }}</td>
+                </tr>
+            </tbody>
+        </table>
 
-    <form method="post" action="{{ path('app_book_delete', {'id': book.id}) }}" onsubmit="return confirm('Are you sure?');">
-        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ book.id) }}">
-        <button class="btn">Delete</button>
-    </form>
+        <div class="form-footer">
+            <a href="{{ path('app_book_index') }}" class="btn-link">⬅ Back to list</a>
+            <a href="{{ path('app_book_edit', {'id': book.id}) }}" class="btn btn-primary">Edit</a>
+
+            <form method="post" action="{{ path('app_book_delete', {'id': book.id}) }}" onsubmit="return confirm('Are you sure?');" style="display:inline-block;">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ book.id) }}">
+                <button class="btn btn-danger">Delete</button>
+            </form>
+        </div>
+
+    </div>
+</div>
 {% endblock %}

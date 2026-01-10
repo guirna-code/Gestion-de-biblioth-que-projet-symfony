@@ -2,6 +2,137 @@
 
 {% block title %}Confirmer l'achat - {{ livre.titre }}{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+<style>
+
+:root {
+    --fun-primary: #6f42c1;
+    --fun-secondary: #20c997;
+    --fun-accent: #ffc107;
+    --fun-bg: #f8f9ff;
+}
+
+
+body {
+    background: linear-gradient(135deg, #f8f9ff, #eef1ff);
+}
+
+
+.card {
+    animation: popIn 0.6s ease-out;
+}
+
+@keyframes popIn {
+    from {
+        transform: scale(0.95) translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+}
+
+.img-fluid {
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.img-fluid:hover {
+    transform: rotate(-2deg) scale(1.05);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+}
+
+.badge {
+    background: linear-gradient(45deg, var(--fun-primary), #b99ff6ff);
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+}
+
+
+.bg-light {
+    background: linear-gradient(135deg, #ffffff, #f1f3ff) !important;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.03);
+}
+
+
+.alert-warning {
+    background: linear-gradient(135deg, #fff3cd, #ffe69c);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(255,193,7,0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(255,193,7,0); }
+    100% { box-shadow: 0 0 0 0 rgba(255,193,7,0); }
+}
+
+.btn-success {
+    background: linear-gradient(135deg, var(--fun-secondary), #198754);
+    border: none;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-success::after {
+    content: "✨";
+    position: absolute;
+    right: 20px;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.btn-success:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 10px 25px rgba(32,201,151,0.4);
+}
+
+.btn-success:hover::after {
+    opacity: 1;
+    right: 15px;
+}
+
+
+.btn-link {
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.btn-link:hover {
+    color: var(--fun-primary);
+    transform: translateX(-4px);
+}
+
+
+.breadcrumb a {
+    text-decoration: none;
+    position: relative;
+}
+
+.breadcrumb a::after {
+    content: "";
+    position: absolute;
+    width: 0%;
+    height: 2px;
+    bottom: -2px;
+    left: 0;
+    background-color: var(--fun-primary);
+    transition: width 0.3s ease;
+}
+
+.breadcrumb a:hover::after {
+    width: 100%;
+}
+
+/* 📱 Responsive petit bonus */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 2rem !important;
+    }
+}
+</style>
+{% endblock %}
+
 {% block body %}
 <div class="container mt-5">
     {# Fil d'ariane #}

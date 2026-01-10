@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Emprunt;
 use App\Entity\Book;
+use App\Repository\BookRepository;
 use App\Form\EmpruntType;
 use App\Repository\EmpruntRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -117,23 +118,31 @@ final class EmpruntController extends AbstractController
 
     #[IsGranted('ROLE_ADMIN')]
     #[Route('/{id}', name: 'app_emprunt_delete', methods: ['POST'])]
-    public function delete(Request $request, Emprunt $emprunt, EntityManagerInterface $entityManager, BookRepository $bookRepository): Response
-{
-    if ($this->isCsrfTokenValid('delete'.$emprunt->getId(), $request->request->get('_token'))) {
+public function delete(
+    Request $request, 
+    Emprunt $emprunt, 
+    EntityManagerInterface $entityManager, 
+    BookRepository $bookRepository
+): Response {
+    if ($this->isCsrfTokenValid('delete'.$emprunt->getId(), $request->getPayload()->get('_token'))) {
         
-        // --- MODIFICATION : Rendre le livre à nouveau disponible ---
-        // On cherche le livre par son titre (puisque vous stockez le titre en string)
-        $book = $bookRepository->findOneBy(['titre' => $emprunt->getLivre()]);
-        if ($book) {
-            $book->setDisponible(true);
-            $entityManager->persist($book);
+        // --- LOGIQUE DE DISPONIBILITÉ ---
+        // On récupère le titre du livre stocké dans l'emprunt
+        $titreLivre = $emprunt->getLivre();
+
+        if ($titreLivre) {
+            // On cherche le livre correspondant en base de données
+            $book = $bookRepository->findOneBy(['titre' => $titreLivre]);
+            
+            if ($book) {
+                $book->setDisponible(true);
+            }
         }
-        // ----------------------------------------------------------
 
         $entityManager->remove($emprunt);
         $entityManager->flush();
         
-        $this->addFlash('success', 'Emprunt supprimé et livre remis en circulation.');
+        $this->addFlash('success', 'L\'emprunt a été supprimé et le livre "' . $titreLivre . '" est de nouveau disponible.');
     }
 
     return $this->redirectToRoute('app_emprunt_index', [], Response::HTTP_SEE_OTHER);

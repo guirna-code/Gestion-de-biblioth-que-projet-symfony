@@ -1,4 +1,0 @@
-/* Styles for templates/user/edit.html.twig */
-
-.user-edit form { background:#fff; padding:1rem; border-radius:6px; border:1px solid #eee; }
-.user-edit .actions { display:flex; gap:.5rem; margin-top:1rem; }

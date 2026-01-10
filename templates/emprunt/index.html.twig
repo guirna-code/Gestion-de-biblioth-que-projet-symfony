@@ -1,17 +1,17 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Emprunts{% endblock %}
+{% block title %}Gestion des Emprunts{% endblock %}
 
 {% block body %}
     <div class="container">
         <div class="page-header">
             <div>
                 <h1 class="page-title">🔄 Emprunts</h1>
-                <div class="small muted">Liste des emprunts enregistrés</div>
+                <div class="small muted">Liste des emprunts enregistrés (Vue Administrateur)</div>
             </div>
             <div>
                 {% if is_granted('ROLE_ADMIN') %}
-                    <a href="{{ path('app_emprunt_new') }}" class="btn btn-primary">Créer un emprunt</a>
+                    <a href="{{ path('app_emprunt_new') }}" class="btn btn-primary">➕ Créer un emprunt</a>
                 {% endif %}
                 <a href="{{ path('library_home') }}" class="btn btn-ghost">Retour</a>
             </div>
@@ -20,14 +20,14 @@
         <div class="card" style="margin-bottom:1rem">
             <div class="flex" style="gap:1rem;align-items:center">
                 <div style="flex:1">
-                    <input id="search" type="search" placeholder="Rechercher par utilisateur ou livre..." style="width:100%;padding:.6rem .75rem;border:1px solid var(--border);border-radius:10px">
+                    <input id="search" type="search" placeholder="Rechercher un utilisateur ou un livre..." style="width:100%;padding:.6rem .75rem;border:1px solid var(--border);border-radius:10px">
                 </div>
                 <div>
-                    <button id="exportCsv" class="btn btn-secondary">Exporter CSV</button>
+                    <button id="exportCsv" class="btn btn-secondary">📥 Exporter CSV</button>
                 </div>
             </div>
         </div>
-     
+      
         <div class="card">
             <div class="table-wrapper">
                 <table id="empruntTable" class="table">
@@ -45,24 +45,49 @@
                     </thead>
                     <tbody>
                         {% for emprunt in emprunts %}
-                            {% set userEmail = emprunt.utilisateur ? emprunt.utilisateur.email : 'Inconnu' %}
+                            {# --- PROTECTION CONTRE LES ENTITÉS FANTÔMES (ID 0, 6, etc.) --- #}
+                            {% set userEmail = 'Utilisateur inconnu' %}
+                            {% set isValid = false %}
+
+                            {# On utilise une vérification très stricte #}
+                            {% if emprunt.utilisateur is defined and emprunt.utilisateur is not null %}
+                                {# Cette syntaxe tente d'accéder à l'ID sans charger toute l'entité #}
+                                {% if emprunt.utilisateur.id > 0 %}
+    
+                                        {% set userEmail = emprunt.utilisateur.email %}
+                                        {% set isValid = true %}
+                                   
+                                {% endif %}
+                            {% endif %}
+
                             <tr data-utilisateur="{{ userEmail|e }}" data-livre="{{ emprunt.livre|e }}">
                                 <td>{{ emprunt.id }}</td>
-                                <td><strong>{{ userEmail }}</strong></td>
+                                <td>
+                                    {% if isValid %}
+                                        <strong>{{ userEmail }}</strong>
+                                    {% else %}
+                                        <span class="badge" style="background-color: #dc3545; color: white; padding: 2px 8px; border-radius: 4px;">
+                                            ⚠️ {{ userEmail }}
+                                        </span>
+                                    {% endif %}
+                                </td>
                                 <td>{{ emprunt.livre }}</td>
                                 <td>{{ emprunt.Empruntdate ? emprunt.Empruntdate|date('d/m/Y') : '-' }}</td>
                                 <td>{{ emprunt.dateretour ? emprunt.dateretour|date('d/m/Y') : '-' }}</td>
                                 <td>
-                                    {{ emprunt.dateRetourReelle ? emprunt.dateRetourReelle|date('d/m/Y') : '<span class="badge bg-warning text-dark">En cours</span>'|raw }}
+                                    {% if emprunt.dateRetourReelle %}
+                                        {{ emprunt.dateRetourReelle|date('d/m/Y') }}
+                                    {% else %}
+                                        <span class="badge bg-warning text-dark" style="background-color: #ffc107; padding: 2px 8px; border-radius: 4px;">En cours</span>
+                                    {% endif %}
                                 </td>
                                 <td>{{ emprunt.penalites is not null ? emprunt.penalites ~ ' €' : '0 €' }}</td>
                                 <td>
                                     <div class="d-flex gap-2">
                                         <a href="{{ path('app_emprunt_show', {'id': emprunt.id}) }}" class="btn btn-sm btn-info text-white">Voir</a>
-                                        
                                         {% if is_granted('ROLE_ADMIN') %}
                                             <a href="{{ path('app_emprunt_edit', {'id': emprunt.id}) }}" class="btn btn-sm btn-warning">Modifier</a>
-                                            <form method="post" action="{{ path('app_emprunt_delete', {'id': emprunt.id}) }}" style="display:inline-block" onsubmit="return confirm('Supprimer cet emprunt ?');">
+                                            <form method="post" action="{{ path('app_emprunt_delete', {'id': emprunt.id}) }}" style="display:inline-block" onsubmit="return confirm('⚠️ Supprimer cet emprunt ?');">
                                                 <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ emprunt.id) }}">
                                                 <button class="btn btn-sm btn-danger">Supprimer</button>
                                             </form>
@@ -72,7 +97,7 @@
                             </tr>
                         {% else %}
                             <tr>
-                                <td colspan="8" class="text-center muted py-4">Aucun emprunt trouvé</td>
+                                <td colspan="8" class="text-center muted py-4">Aucun emprunt trouvé.</td>
                             </tr>
                         {% endfor %}
                     </tbody>
@@ -84,6 +109,7 @@
 
 {% block javascripts %}
     <script>
+        // Votre script JS reste identique, il est déjà très bien.
         (function(){
             const $search = document.getElementById('search');
             const $table = document.getElementById('empruntTable');
@@ -103,10 +129,9 @@
                 $search.addEventListener('input', e => filter(e.target.value));
             }
 
-            // CSV export
             document.getElementById('exportCsv').addEventListener('click', () => {
                 const visibleRows = $rows.filter(r => r.style.display !== 'none');
-                const lines = [['Id','Utilisateur','Livre','Emprunt','Retour prévu','Retour réel','Pénalités']];
+                const lines = [['Id','Utilisateur','Livre','Date Emprunt','Retour Prevu','Retour Reel','Penalites']];
                 visibleRows.forEach(r => {
                     const cells = Array.from(r.querySelectorAll('td')).slice(0,7).map(td => td.textContent.trim());
                     lines.push(cells);
@@ -116,7 +141,7 @@
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = 'emprunts.csv';
+                a.download = 'export_emprunts.csv';
                 document.body.appendChild(a);
                 a.click();
                 a.remove();

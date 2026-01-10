@@ -2,15 +2,167 @@
 
 {% block title %}Liste des livres{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /* ---------- GLOBAL ---------- */
+        :root {
+            --primary: #0d6efd;
+            --secondary: #6c757d;
+            --success: #198754;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --light: #f8f9fa;
+            --border: #e5e7eb;
+        }
+
+        body {
+            background-color: #f4f6f9;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: auto;
+        }
+
+        /* ---------- HEADER ---------- */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 2rem 0 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .muted {
+            color: var(--secondary);
+        }
+
+        /* ---------- CARD ---------- */
+        .card {
+            background: white;
+            border-radius: 18px;
+            padding: 1.2rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+        }
+
+        /* ---------- TABLE ---------- */
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            background: var(--light);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: .05em;
+            padding: 14px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+            font-size: 0.9rem;
+        }
+
+        tbody tr:hover {
+            background-color: #f9fafb;
+        }
+
+        /* ---------- BUTTONS ---------- */
+        .btn {
+            border-radius: 10px;
+            font-size: 0.85rem;
+            padding: 6px 14px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--secondary);
+        }
+
+        .btn-ghost:hover {
+            background: var(--light);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            border: none;
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            border: none;
+            color: white;
+        }
+
+        /* ---------- ACTIONS COLUMN ---------- */
+        .actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .actions form {
+            margin: 0;
+        }
+
+        /* ---------- EMPTY ---------- */
+        .empty {
+            text-align: center;
+            font-style: italic;
+            color: var(--secondary);
+            padding: 2rem;
+        }
+
+        /* ---------- RESPONSIVE ---------- */
+        @media (max-width: 768px) {
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .page-title {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
 <div class="container">
+
     <div class="page-header">
         <h1 class="page-title">📚 Liste des livres</h1>
-        <div>
-            {% if is_granted('ROLE_ADMIN') %}
-                <a href="{{ path('app_book_new') }}" class="btn btn-primary">Nouveau livre</a>
-            {% endif %}
-        </div>
+
+        {% if is_granted('ROLE_ADMIN') %}
+            <a href="{{ path('app_book_new') }}" class="btn btn-primary">
+                ➕ Nouveau livre
+            </a>
+        {% endif %}
     </div>
 
     <div class="card">
@@ -27,29 +179,54 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for book in books %}
-                        <tr>
-                            <td>{{ book.id }}</td>
-                            <td>{{ book.titre }}</td>
-                            <td>{{ book.auteur }}</td>
-                            <td>{{ book.isbn }}</td>
-                            <td>{{ book.disponible ? 'Oui' : 'Non' }}</td>
-                            <td>
-                                <a href="{{ path('app_book_show', {'id': book.id}) }}" class="btn btn-ghost">Voir</a>
+                {% for book in books %}
+                    <tr>
+                        <td>{{ book.id }}</td>
+                        <td>{{ book.titre }}</td>
+                        <td>{{ book.auteur }}</td>
+                        <td>{{ book.isbn }}</td>
+                        <td>
+                            {% if book.disponible %}
+                                <span class="badge bg-success">Oui</span>
+                            {% else %}
+                                <span class="badge bg-warning">Non</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="actions">
+                                <a href="{{ path('app_book_show', {'id': book.id}) }}"
+                                   class="btn btn-ghost">
+                                    Voir
+                                </a>
+
                                 {% if is_granted('ROLE_ADMIN') %}
-                                    <a href="{{ path('app_book_edit', {'id': book.id}) }}" class="btn btn-primary">Modifier</a>
-                                    {{ include('book/_delete_form.html.twig') }}
+                                    <a href="{{ path('app_book_edit', {'id': book.id}) }}"
+                                       class="btn btn-primary">
+                                        Modifier
+                                    </a>
+
+                                    <form method="post"
+                                          action="{{ path('app_book_delete', {'id': book.id}) }}"
+                                          onsubmit="return confirm('⚠️ Supprimer ce livre ?');">
+                                        <input type="hidden" name="_token"
+                                               value="{{ csrf_token('delete' ~ book.id) }}">
+                                        <button class="btn btn-danger">
+                                            Delete
+                                        </button>
+                                    </form>
                                 {% endif %}
-                            </td>
-                        </tr>
-                    {% else %}
-                        <tr>
-                            <td colspan="6" class="center muted">Aucun livre trouvé</td>
-                        </tr>
-                    {% endfor %}
+                            </div>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="6" class="empty">Aucun livre trouvé</td>
+                    </tr>
+                {% endfor %}
                 </tbody>
             </table>
         </div>
     </div>
+
 </div>
 {% endblock %}

@@ -2,45 +2,151 @@
 
 {% block title %}Emprunt{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /* ---------- PAGE ---------- */
+        body {
+            background-color: #f4f6f9;
+        }
+
+        .page-container {
+            max-width: 800px;
+            margin: 3rem auto;
+        }
+
+        /* ---------- CARD ---------- */
+        .card {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 2rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        }
+
+        /* ---------- TITLE ---------- */
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        /* ---------- TABLE ---------- */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 2rem;
+        }
+
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th {
+            font-weight: 600;
+            background-color: #f8f9fa;
+        }
+
+        /* ---------- BUTTONS ---------- */
+        .btn {
+            border-radius: 12px;
+            padding: 0.6rem 1.4rem;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background-color: #0d6efd;
+            border: none;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background-color: #0b5ed7;
+            transform: translateY(-1px);
+        }
+
+        .btn-link {
+            text-decoration: none;
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        .btn-link:hover {
+            text-decoration: underline;
+        }
+
+        /* ---------- FOOTER ---------- */
+        .form-footer {
+            display: flex;
+            justify-content: flex-start;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        /* ---------- RESPONSIVE ---------- */
+        @media (max-width: 576px) {
+            .page-title {
+                font-size: 1.6rem;
+            }
+
+            th, td {
+                padding: 0.5rem 0.75rem;
+            }
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
-    <h1>Emprunt</h1>
+<div class="page-container">
+    <div class="card">
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ emprunt.id }}</td>
-            </tr>
-            <tr>
-                <th>Utilisateur</th>
-                <td>{{ emprunt.utilisateur }}</td>
-            </tr>
-            <tr>
-                <th>Livre</th>
-                <td>{{ emprunt.livre }}</td>
-            </tr>
-            <tr>
-                <th>Empruntdate</th>
-                <td>{{ emprunt.Empruntdate ? emprunt.Empruntdate|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Dateretour</th>
-                <td>{{ emprunt.dateretour ? emprunt.dateretour|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Date_retour_réelle</th>
-                <td>{{ emprunt.dateRetourReelle ? emprunt.dateRetourReelle|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Pénalités</th>
-                <td>{{ emprunt.penalites}}</td>
-            </tr>
-        </tbody>
-    </table>
+        <h1 class="page-title">📄 Emprunt Details</h1>
+        
+        <table>
+            <tbody>
+                <tr>
+                    <th>Id</th>
+                    <td>{{ emprunt.id }}</td>
+                </tr>
+                <tr>
+                    <th>Utilisateur</th>
+                    <td>{{ emprunt.utilisateur }}</td>
+                </tr>
+                <tr>
+                    <th>Livre</th>
+                    <td>{{ emprunt.livre }}</td>
+                </tr>
+                <tr>
+                    <th>Empruntdate</th>
+                    <td>{{ emprunt.Empruntdate ? emprunt.Empruntdate|date('Y-m-d H:i:s') : '' }}</td>
+                </tr>
+                <tr>
+                    <th>Dateretour</th>
+                    <td>{{ emprunt.dateretour ? emprunt.dateretour|date('Y-m-d H:i:s') : '' }}</td>
+                </tr>
+                <tr>
+                    <th>Date_retour_réelle</th>
+                    <td>{{ emprunt.dateRetourReelle ? emprunt.dateRetourReelle|date('Y-m-d H:i:s') : '' }}</td>
+                </tr>
+                <tr>
+                    <th>Pénalités</th>
+                    <td>{{ emprunt.penalites}}</td>
+                </tr>
+            </tbody>
+        </table>
 
-    <a href="{{ path('app_emprunt_index') }}">back to list</a>
+        <div class="form-footer">
+            <a href="{{ path('app_emprunt_index') }}" class="btn-link">⬅ Back to list</a>
+            <a href="{{ path('app_emprunt_edit', {'id': emprunt.id}) }}" class="btn btn-primary">Edit</a>
+            {{ include('emprunt/_delete_form.html.twig') }}
+        </div>
 
-    <a href="{{ path('app_emprunt_edit', {'id': emprunt.id}) }}">edit</a>
-
-    {{ include('emprunt/_delete_form.html.twig') }}
+    </div>
+</div>
 {% endblock %}

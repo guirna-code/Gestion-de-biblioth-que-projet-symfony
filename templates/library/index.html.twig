@@ -47,7 +47,7 @@
 
         <div class="mt-xl">
             <div class="flex items-center justify-between mb-md">
-                <h2 class="h4 mb-0">📖 Catalogue des livres</h2>
+                <h2 class="h4 mb-0">📖 livres disponible</h2>
             </div>
 
             <div class="grid grid-3 gap-md">
@@ -67,18 +67,11 @@
                         </div>
                        <div class="mt-md">
     {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-        {# On vérifie la disponibilité réelle en base de données #}
-        {% if livre.getDisponible() %}
-            <a href="{{ path('app_emprunt_commander', {'id': livre.id}) }}" 
-               class="btn btn-primary btn-block">
-                Commander maintenant
-            </a>
-        {% else %}
-            {# Si disponible est à false, on affiche ce bouton gris #}
-            <button class="btn btn-secondary btn-block" disabled style="opacity: 0.6; cursor: not-allowed;">
-                ❌ Déjà réservé
-            </button>
-        {% endif %}
+        {# On pointe vers la page de CONFIRMATION #}
+        <a href="{{ path('app_achat_confirmation', {'id': livre.id}) }}" 
+           class="btn btn-primary btn-block">
+           ✅ Commander maintenant
+        </a>
     {% else %}
         <a href="{{ path('app_login') }}" class="btn btn-outline btn-block btn-sm">
             Connectez-vous pour commander

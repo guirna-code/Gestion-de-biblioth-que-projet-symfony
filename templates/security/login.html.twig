@@ -5,78 +5,199 @@
 {% block stylesheets %}
     {{ parent() }}
     <style>
-        .active-role { background-color: var(--primary); color: white !important; }
+        :root {
+            --primary: #0d6efd;
+            --secondary: #6c757d;
+            --bg-card: #ffffff;
+            --text-muted: #6c757d;
+            --border-color: #eee;
+            --gap: 0.75rem;
+            --radius: 0.5rem;
+            --padding-card: 1.5rem;
+        }
+
+        /* Card container */
+        .login-card {
+            background-color: var(--bg-card);
+            padding: var(--padding-card);
+            border-radius: var(--radius);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Page title */
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        /* Role buttons */
+        .role-tabs {
+            display: flex;
+            gap: var(--gap);
+            margin-bottom: 1.5rem;
+        }
+
+        .role-tabs .btn {
+            flex: 1;
+            border: 1px solid var(--primary);
+            border-radius: var(--radius);
+            background: transparent;
+            color: var(--primary);
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .role-tabs .btn:hover {
+            background-color: var(--primary);
+            color: #fff;
+        }
+
+        .role-tabs .active-role {
+            background-color: var(--primary);
+            color: #fff;
+        }
+
+        /* Form styles */
+        .login-form .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 1rem;
+        }
+
+        .login-form label {
+            margin-bottom: 0.25rem;
+            font-weight: 500;
+        }
+
+        .login-form input {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #ccc;
+            border-radius: var(--radius);
+            font-size: 1rem;
+            transition: border 0.3s;
+        }
+
+        .login-form input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.2);
+        }
+
+        /* Button group at the bottom */
+        .login-form-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1.5rem;
+            gap: var(--gap);
+        }
+
+        .login-form-actions .btn {
+            flex: 1;
+        }
+
+        /* Footer section */
+        .login-footer {
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .login-footer .muted {
+            color: var(--text-muted);
+        }
+
+        /* Alert */
+        .alert-danger {
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius);
+            background-color: #f8d7da;
+            color: #842029;
+            margin-bottom: 1rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 576px) {
+            .role-tabs {
+                flex-direction: column;
+            }
+
+            .login-form-actions {
+                flex-direction: column;
+            }
+        }
     </style>
 {% endblock %}
 
 {% block body %}
-    <div class="container" style="padding:3rem 1rem">
-        <div style="max-width:520px;margin:0 auto">
-            <div class="card">
-                <div style="padding:1.25rem">
-                    <h3 class="page-title">Se connecter</h3>
+<div class="container" style="padding:3rem 1rem;">
+    <div style="max-width:480px; margin:0 auto;">
+        <div class="login-card">
+            <h3 class="page-title">Se connecter</h3>
 
-                    {% if error %}
-                        <div class="alert alert-danger">
-                            {{ error.messageKey|trans(error.messageData, 'security') }}
-                        </div>
-                    {% endif %}
-
-                    <div style="display:flex; gap:.5rem; margin-bottom:1.5rem;">
-                        <button id="tab-admin" class="btn btn-ghost" type="button">Admin</button>
-                        <button id="tab-client" class="btn btn-ghost active-role" type="button">Client</button>
-                    </div>
-
-                    <form method="post" action="{{ path('app_login') }}">
-                        <div class="form-group">
-                            <label for="username" id="label-username">Identifiant (email)</label>
-                            <input type="text" value="{{ last_username }}" name="_username" id="username" required autofocus>
-                        </div>
-
-                        <div class="form-group" style="margin-top: 1rem;">
-                            <label for="password">Mot de passe</label>
-                            <input type="password" name="_password" id="password" required>
-                        </div>
-
-                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1.5rem">
-                            <button class="btn btn-primary" type="submit">Se connecter</button>
-                            <a href="/" class="btn btn-ghost">Retour</a>
-                        </div>
-                    </form>
-
-                    <div style="margin-top:1.5rem; border-top:1px solid #eee; padding-top:1rem">
-                        <div style="display:flex; justify-content:space-between; align-items:center">
-                            <small class="muted">Nouvel utilisateur ?</small>
-                            <a href="{{ path('user_new') }}" class="btn btn-ghost btn-sm">S'inscrire (client)</a>
-                        </div>
-                    </div>
-
-                    <script>
-                        document.addEventListener('DOMContentLoaded', function() {
-                            const adminBtn = document.getElementById('tab-admin');
-                            const clientBtn = document.getElementById('tab-client');
-                            const usernameLabel = document.getElementById('label-username');
-
-                            function selectRole(role) {
-                                if (role === 'admin') {
-                                    usernameLabel.textContent = 'Nom d\'utilisateur (Admin)';
-                                    adminBtn.classList.add('active-role');
-                                    clientBtn.classList.remove('active-role');
-                                } else {
-                                    usernameLabel.textContent = 'Identifiant (email)';
-                                    clientBtn.classList.add('active-role');
-                                    adminBtn.classList.remove('active-role');
-                                }
-                            }
-
-                            adminBtn.addEventListener('click', () => selectRole('admin'));
-                            clientBtn.addEventListener('click', () => selectRole('client'));
-                        });
-                    </script>
+            {% if error %}
+                <div class="alert alert-danger">
+                    {{ error.messageKey|trans(error.messageData, 'security') }}
                 </div>
+            {% endif %}
+
+            <div class="role-tabs">
+                <button id="tab-admin" class="btn btn-ghost" type="button">Admin</button>
+                <button id="tab-client" class="btn btn-ghost active-role" type="button">Client</button>
+            </div>
+
+            <form class="login-form" method="post" action="{{ path('app_login') }}">
+                <div class="form-group">
+                    <label for="username" id="label-username">Identifiant (email)</label>
+                    <input type="text" value="{{ last_username }}" name="_username" id="username" required autofocus>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Mot de passe</label>
+                    <input type="password" name="_password" id="password" required>
+                </div>
+
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                <div class="login-form-actions">
+                    <button class="btn btn-primary" type="submit">Se connecter</button>
+                    <a href="/" class="btn btn-ghost">Retour</a>
+                </div>
+            </form>
+
+            <div class="login-footer">
+                <small class="muted">Nouvel utilisateur ?</small>
+                <a href="{{ path('user_new') }}" class="btn btn-ghost btn-sm">S'inscrire (client)</a>
             </div>
         </div>
     </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const adminBtn = document.getElementById('tab-admin');
+    const clientBtn = document.getElementById('tab-client');
+    const usernameLabel = document.getElementById('label-username');
+
+    function selectRole(role) {
+        if(role === 'admin') {
+            usernameLabel.textContent = "Nom d'utilisateur (Admin)";
+            adminBtn.classList.add('active-role');
+            clientBtn.classList.remove('active-role');
+        } else {
+            usernameLabel.textContent = 'Identifiant (email)';
+            clientBtn.classList.add('active-role');
+            adminBtn.classList.remove('active-role');
+        }
+    }
+
+    adminBtn.addEventListener('click', () => selectRole('admin'));
+    clientBtn.addEventListener('click', () => selectRole('client'));
+});
+</script>
 {% endblock %}
